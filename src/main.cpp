@@ -80,10 +80,12 @@ void setup() {
 
     ledController = LedControllerFactory::getInstance()->createLedController(&vescData);
 
+    #if defined(PIN_FORWARD) && defined(PIN_BACKWARD) && defined(PIN_BRAKE)
     pinMode(PIN_FORWARD, INPUT);
     pinMode(PIN_BACKWARD, INPUT);
     pinMode(PIN_BRAKE, INPUT);
-
+    #endif
+    
     vesc.begin(VESC_BAUD_RATE, SERIAL_8N1, VESC_RX_PIN, VESC_TX_PIN, false);
     delay(50);
 #ifdef CANBUS_ENABLED
