@@ -1,5 +1,5 @@
 #include "BleCanProxy.h"
-
+#include "VescCanConstants.h"
 
 BleCanProxy::BleCanProxy(CanDevice *candevice, Stream *stream, uint8_t vesc_id, uint8_t ble_proxy_can_id) {
     this->candevice = candevice;
@@ -113,6 +113,13 @@ void BleCanProxy::proxyIn(std::string in) {
         tx_frame.data[3] = length & 0xFF;
         tx_frame.data[4] = longPackBuffer.at(longPackBuffer.size() - 3);
         tx_frame.data[5] = longPackBuffer.at(longPackBuffer.size() - 2);
+
+    if(command==16)
+    {
+        printf("longPackBuffer start %d,%d,%d,%d,%d,%d,%d,%d\n,",longPackBuffer.data()[0],longPackBuffer.data()[1],longPackBuffer.data()[2],longPackBuffer.data()[3],longPackBuffer.data()[4],longPackBuffer.data()[5],longPackBuffer.data()[6],longPackBuffer.data()[7]);
+        printf("longPackBuffer end %d,%d,%d,%d,%d,%d,%d,%d\n,",longPackBuffer.data()[longPackBuffer.size()-7],longPackBuffer.data()[longPackBuffer.size()-6],longPackBuffer.data()[longPackBuffer.size()-5],longPackBuffer.data()[longPackBuffer.size()-4],longPackBuffer.data()[longPackBuffer.size()-3],longPackBuffer.data()[longPackBuffer.size()-2],longPackBuffer.data()[longPackBuffer.size()-1],longPackBuffer.data()[longPackBuffer.size()]);
+    }
+
         candevice->sendCanFrame(&tx_frame);
 
     }
@@ -133,6 +140,7 @@ void BleCanProxy::proxyOut(uint8_t *data, unsigned int size, uint8_t crc1, uint8
         snprintf(buf, bufSize, "Proxy out, sending %d bytes\n", size);
         Logger::verbose(LOG_TAG_BLE_CAN_PROXY, buf);
     }
+    printf("Proxy out, sending %d bytes\n", size);
     //Start bit, package size
     if (size <= 255) {
         //Serial.print(0x02);
@@ -140,7 +148,7 @@ void BleCanProxy::proxyOut(uint8_t *data, unsigned int size, uint8_t crc1, uint8
         // size
         //Serial.print(size);
         stream->write(size);
-    } else if (size <= 65535) {
+    } else if (size <= BUFFER_SIZE) {
         //Serial.print(0x03);
         stream->write(0x03);
         // size

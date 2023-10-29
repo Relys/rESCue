@@ -3,7 +3,8 @@
 #include <sstream>
 
 int MTU_SIZE = 128;
-int PACKET_SIZE = MTU_SIZE-3;
+//14 and 6 kinda work. i think the end of the packet is being missed in some cases like last 4 bytes NN03
+int PACKET_SIZE = 6;
 NimBLEServer *pServer = nullptr;
 NimBLEService *pServiceVesc = nullptr;
 NimBLEService *pServiceRescue = nullptr;
